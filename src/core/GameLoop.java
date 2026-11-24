@@ -12,7 +12,6 @@ public class GameLoop implements Runnable{
     private final double GAME_HERTZ = 60.0;
     private final double TIME_BETWEEN_UPDATES = 1000000000 / GAME_HERTZ;
 
-    // Simple performance tracking
     private int fps = 0;
     private int ups = 0;
 
@@ -56,7 +55,6 @@ public class GameLoop implements Runnable{
 
             frames++;
 
-            // Performance tracking: prints FPS and UPS once per second
             if (System.currentTimeMillis() - lastTimer >= 1000) {
                 lastTimer += 1000;
                 fps = frames;
@@ -66,7 +64,6 @@ public class GameLoop implements Runnable{
                 updates = 0;
             }
 
-            // Optional: Reduce CPU stress by offering a tiny pause
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
