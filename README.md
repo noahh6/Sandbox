@@ -1,6 +1,6 @@
-<img width="1197" height="796" alt="Screenshot 2026-11-24 204527" src="https://github.com/user-attachments/assets/d98db893-8be6-4cd0-a141-c6ac5699d1bb" />
-
 # Sandbox
+
+<img width="1197" height="796" alt="Screenshot 2026-11-24 204527" src="https://github.com/user-attachments/assets/d98db893-8be6-4cd0-a141-c6ac5699d1bb" />
 
 A 2D tile-based sandbox game built from scratch in **Java** using **Java Swing / AWT**—with no external game engines or physics libraries. Designed to explore real-time game loops, grid-based world generation, custom AABB collision detection, and modular item/entity systems.
 
