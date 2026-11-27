@@ -2,8 +2,6 @@
 
 # Sandbox
 
-!\[Sandbox Banner](path/to/your/screenshot.png)
-
 A 2D tile-based sandbox game built from scratch in **Java** using **Java Swing / AWT**—with no external game engines or physics libraries. Designed to explore real-time game loops, grid-based world generation, custom AABB collision detection, and modular item/entity systems.
 
 \---
