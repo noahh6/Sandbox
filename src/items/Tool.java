@@ -6,14 +6,14 @@ public abstract class Tool implements Item {
 
     public static final int SIZE = 25;
 
-    private final ItemType toolType;
+    private final ToolType toolType;
 
     public Tool(ToolType toolType) {
         this.toolType = toolType;
     }
 
     @Override
-    public ItemType getItemType() {
+    public ToolType getItemType() {
         return toolType;
     }
 

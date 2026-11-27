@@ -1,7 +1,5 @@
 package items;
 
-import entities.*;
-
 public class Inventory {
 
     public static final int INVENTORY_SIZE = 9;
@@ -9,6 +7,8 @@ public class Inventory {
     private int selectedSlot;
 
     private final ItemStack[] inventory;
+
+    private Runnable onInventoryChanged;
 
     public Inventory() {
         inventory = new ItemStack[INVENTORY_SIZE];
@@ -24,6 +24,7 @@ public class Inventory {
         inventory[3] = new ItemStack(BlockType.LEAVES, 64);
         inventory[4] = new ItemStack(BlockType.STONE, 64);
         inventory[5] = new ItemStack(ThrowableType.BOMB, 64);
+        inventory[6] = new ItemStack(ThrowableType.FILL_GRENADE, 64);
         inventory[8] = new ItemStack(ToolType.EYEDROPPER, 1);
     }
 
@@ -44,11 +45,13 @@ public class Inventory {
         if (index >= INVENTORY_SIZE || index < 0) return;
 
         inventory[index] = null;
+        notifyChanged();
     }
 
     public void setItemStack(int index, ItemType itemType, int stackCount) {
         if (index >= INVENTORY_SIZE || index < 0 || itemType == null || itemType == BlockType.AIR) return;
         inventory[index] = new ItemStack(itemType, stackCount);
+        notifyChanged();
     }
 
     public void clearEmptyStacks() {
@@ -66,6 +69,7 @@ public class Inventory {
         for (int i = 0; i < INVENTORY_SIZE; i++) {
             inventory[i] = null;
         }
+        notifyChanged();
     }
 
     public int getNextFreeSlot() {
@@ -76,5 +80,15 @@ public class Inventory {
         }
 
         return -1;
+    }
+
+    public void setOnInventoryChanged(Runnable listener) {
+        this.onInventoryChanged = listener;
+    }
+
+    private void notifyChanged() {
+        if (onInventoryChanged != null) {
+            onInventoryChanged.run();
+        }
     }
 }

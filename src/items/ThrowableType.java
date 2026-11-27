@@ -8,7 +8,7 @@ import world.*;
 import java.awt.image.*;
 
 public enum ThrowableType implements ItemType {
-    BOMB("Bomb", 6, Bomb::new);
+    BOMB("Bomb", 6, Bomb::new), FILL_GRENADE("Fill Grenade", 9, FillGrenade::new);
 
     public static final int MAX_STACK_SIZE = 64;
 
@@ -46,11 +46,11 @@ public enum ThrowableType implements ItemType {
     }
 
     public Throwable createThrowable(World world, int x, int y) {
-        return factory == null ? null : factory.create(world, x, y);
+        return factory == null ? null : factory.create(x, y, world);
     }
 
     @FunctionalInterface
     public interface ThrowableFactory {
-        Throwable create(World world, int x, int y);
+        Throwable create(int x, int y, World world);
     }
 }

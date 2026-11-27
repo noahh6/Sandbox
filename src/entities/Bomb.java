@@ -11,17 +11,11 @@ public class Bomb extends Throwable {
     private static final int FUSE_DURATION = 100;
     private static final int EXPLOSION_SIZE = 5;
 
-    private final World world;
-    private final Rectangle hitbox;
-
     private int fuseTimer;
 
-    public Bomb(World world, int x, int y) {
-        super(ThrowableType.BOMB, x - SIZE / 2, y - SIZE);
-        this.world = world;
+    public Bomb(int x, int y, World world) {
+        super(ThrowableType.BOMB, x - SIZE / 2, y - SIZE, world);
         fuseTimer = 0;
-        hitbox = new Rectangle(x, y, SIZE, SIZE);
-        isFalling = true;
     }
 
     @Override
@@ -31,30 +25,6 @@ public class Bomb extends Throwable {
         if (fuseTimer >= FUSE_DURATION) {
             explode();
             isActive = false;
-        }
-    }
-
-    @Override
-    void checkCollision() {
-        hitbox.setBounds(x, y, SIZE, SIZE);
-
-        int targetRow = (y + SIZE) / Block.SIZE;
-        int targetCol = (x + SIZE / 2) / Block.SIZE;
-
-        for (int c = targetCol - 1; c < targetCol + 2; c++) {
-            Block targetBlock = world.getBlockAt(targetRow, c);
-
-            if (targetBlock == null) continue;
-
-            if (hitbox.intersects(targetBlock.getHitbox()) && targetBlock.getItemType() != BlockType.AIR) {
-                isFalling = false;
-
-                // Snap y to grid
-                y = World.snapToGrid(y);
-            }
-            else {
-                isFalling = true;
-            }
         }
     }
 

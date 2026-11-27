@@ -49,6 +49,7 @@ public class Player {
         this.world = world;
         activeTools = new ArrayList<>();
         inventory = new Inventory();
+        this.inventory.setOnInventoryChanged(this::removeOldTools);
     }
 
     public int getX() {
@@ -163,20 +164,22 @@ public class Player {
 
         List<String> directions = new ArrayList<>();
 
-        int startRow = y / Block.SIZE - Block.SIZE * 2;
-        int endRow = (y + h) / Block.SIZE + Block.SIZE * 2;
-        int startCol = x / Block.SIZE - Block.SIZE * 2;
-        int endCol = (x + w) / Block.SIZE + Block.SIZE * 2;
+        int tilePadding = 2;
+        int startRow = y / Block.SIZE - tilePadding;
+        int endRow = (y + h) / Block.SIZE + tilePadding;
+        int startCol = x / Block.SIZE - tilePadding;
+        int endCol = (x + w) / Block.SIZE + tilePadding;
 
         for (int r = startRow; r <= endRow; r++) {
             for (int c = startCol; c <= endCol; c++) {
 
-                Point bounds = World.fitToBounds(r, c);
-                Block block = world.getBlockAt((int) bounds.getX(), (int) bounds.getY());
+                if (r >= World.ROWS || r < 0 || c >= World.COLS || c < 0) continue;
+
+                Block block = world.getBlockAt(r, c);
 
                 if (block.getItemType() == BlockType.AIR) continue;
 
-                if (isMovingLeft) {
+                if (isMovingLeft && !directions.contains("left")) {
                     Rectangle leftBox = new Rectangle(hitBox);
                     leftBox.x -= speed;
                     if (leftBox.intersects(block.getHitbox()) && leftBox.x < block.getHitbox().x + Block.SIZE) {
@@ -184,7 +187,7 @@ public class Player {
                     }
                 }
 
-                if (isMovingRight) {
+                if (isMovingRight && !directions.contains("right")) {
                     Rectangle rightBox = new Rectangle(hitBox);
                     rightBox.x += speed;
                     if (rightBox.intersects(block.getHitbox()) && rightBox.x + w > block.getHitbox().x) {
@@ -192,7 +195,7 @@ public class Player {
                     }
                 }
 
-                if (checkJump) {
+                if (checkJump && !directions.contains("up")) {
                     Rectangle jumpBox = new Rectangle(hitBox);
                     jumpBox.y -= jumpStrength;
                     if (jumpBox.intersects(block.getHitbox()) && jumpBox.y < block.getHitbox().y + Block.SIZE) {
@@ -359,5 +362,20 @@ public class Player {
 
         targetTool.useTool(block);
     }
+
+
+    public void removeOldTools() {
+        Set<ToolType> currentTools = new HashSet<>();
+
+        for (int i = 0; i < Inventory.INVENTORY_SIZE; i++) {
+            ItemStack stack = inventory.getItemStackAt(i);
+            if (stack != null && stack.getItemType() instanceof ToolType toolType) {
+                currentTools.add(toolType);
+            }
+        }
+
+        activeTools.removeIf(tool -> !currentTools.contains(tool.getItemType()));
+    }
+
 
 }

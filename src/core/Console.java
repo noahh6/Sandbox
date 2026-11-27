@@ -9,7 +9,7 @@ public class Console {
 
     private final Player player;
 
-    public Console(Player player, World world) {
+    public Console(Player player) {
         this.player = player;
     }
 
@@ -17,6 +17,7 @@ public class Console {
         if (prompt.charAt(0) != '/') return false;
 
         String[] arguments = prompt.substring(1).split(" ");
+        var inventory = player.getInventory();
 
         switch (arguments[0]) {
             case "give":
@@ -25,7 +26,7 @@ public class Console {
                     return false;
                 }
 
-                ItemType itemType = getItemType(arguments[1]);
+                ItemType itemType = Items.getItemType(arguments[1]);
 
                 if (itemType == null) {
                     System.out.println("INVALID INPUT: No item found: " + arguments[1]);
@@ -35,10 +36,19 @@ public class Console {
                 int count = 1;
 
                 if (arguments.length == 3) {
-                    count = Integer.parseInt(arguments[2]);
+                    try {
+                        count = Integer.parseInt(arguments[2]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("INVALID INPUT: Count must be a valid number: " + arguments[2]);
+                        return false;
+                    }
+
+                    if (count <= 0) {
+                        System.out.println("INVALID INPUT: Count must be a valid number: " + count);
+                        return false;
+                    }
                 }
 
-                var inventory = player.getInventory();
                 int freeIndex = inventory.getNextFreeSlot();
 
                 if (freeIndex != -1) {
@@ -47,24 +57,40 @@ public class Console {
 
                 if (count > 1 && itemType instanceof ThrowableType) {
                     System.out.printf("CONSOLE: Giving player %d %ss%n", count, arguments[1].toLowerCase());
-                }
-                else {
+                } else {
                     System.out.printf("CONSOLE: Giving player %d %s%n", count, arguments[1].toLowerCase());
                 }
 
                 return true;
 
             case "clear":
-                if (arguments.length > 1) {
+
+                if (arguments.length == 1) {
+                    inventory.clearInventory();
+                    System.out.println("CONSOLE: INVENTORY CLEARED");
+                    return true;
+                } else if (arguments.length == 2) {
+                    int slotIndex = -1;
+
+                    try {
+                        slotIndex = Integer.parseInt(arguments[1]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("INVALID INPUT: Index must be a valid number: " + arguments[1]);
+                        return false;
+                    }
+
+                    if (slotIndex < 0 || slotIndex >= Inventory.INVENTORY_SIZE) {
+                        System.out.println("INVALID INPUT: Index must be a valid number: " + slotIndex);
+                        return false;
+                    }
+
+                    inventory.removeItemStack(slotIndex);
+                    System.out.println("CONSOLE: INVENTORY SLOT " + slotIndex + " CLEARED");
+                    return true;
+                } else {
                     System.out.println("INVALID COMMAND: /clear requires 1 or 2 argument");
                     return false;
                 }
-
-                player.getInventory().clearInventory();
-
-                System.out.println("CONSOLE: INVENTORY CLEARED");
-
-                return true;
 
             default:
                 System.out.println("INVALID COMMAND");
@@ -72,20 +98,4 @@ public class Console {
 
         return false;
     }
-
-    private static ItemType getItemType(String itemName) {
-        for (Items item : Items.values()) {
-            if (item.getItemType() == null) continue;
-            String itemN = item.getItemType().getDisplayName();
-
-            if (itemName.equalsIgnoreCase(itemN)) {
-                return item.getItemType();
-            }
-
-        }
-
-        return null;
-    }
-
-    
 }

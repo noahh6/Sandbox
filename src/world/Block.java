@@ -6,16 +6,14 @@ import java.awt.*;
 
 public class Block implements Item {
 
-    private int x, y;
-
     private BlockType blockType;
     private final Rectangle hitBox;
 
     public Block(BlockType blockType, int row, int col) {
         this.blockType = blockType;
 
-        x = col * SIZE;
-        y = row * SIZE;
+        int x = col * SIZE;
+        int y = row * SIZE;
 
         hitBox = new Rectangle(x, y, SIZE, SIZE);
     }
@@ -29,13 +27,7 @@ public class Block implements Item {
     }
 
     @Override
-    public ItemType getItemType() {
+    public BlockType getItemType() {
         return blockType;
-    }
-
-    public void applyGravity() {
-        y += World.GRAVITY;
-
-        hitBox.setBounds(x, y, SIZE, SIZE);
     }
 }

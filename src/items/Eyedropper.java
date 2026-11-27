@@ -34,7 +34,7 @@ public class Eyedropper extends Tool {
 
         if (freeIndex != -1 && !isInInventory) {
             BlockType selectedBlock = (BlockType) block.getItemType();
-            if (block.getItemType() != null) {
+            if (block.getItemType() != null && block.getItemType() != BlockType.AIR) {
                 player.getInventory().setItemStack(freeIndex, selectedBlock, selectedBlock.getMaxStackSize());
             }
         }

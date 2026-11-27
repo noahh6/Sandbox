@@ -7,7 +7,8 @@ import world.*;
 import java.awt.image.*;
 
 public enum ToolType implements ItemType {
-    EYEDROPPER("Eyedropper", 8, Eyedropper::new);
+    EYEDROPPER("Eyedropper", 8, Eyedropper::new), PAINTBRUSH("Paintbrush", 10, Paintbrush::new),
+    INFO_TOOL("Info Tool", 11, InfoTool::new);
 
     public static final int MAX_STACK_SIZE = 1;
 

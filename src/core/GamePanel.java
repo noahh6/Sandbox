@@ -35,7 +35,7 @@ public class GamePanel extends JPanel {
     private static int IDCap;
 
     private final Console console;
-    private boolean showConsole, isShowingConsole;
+    private boolean showConsole, isShowingPane;
 
     public GamePanel(Player player) {
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -48,9 +48,9 @@ public class GamePanel extends JPanel {
         highlightColor = new Color(0, 0, 0, 40);
         outlineStroke = new BasicStroke(1);
 
-        console = new Console(player, world);
+        console = new Console(player);
         showConsole = false;
-        isShowingConsole = false;
+        isShowingPane = false;
 
         int invX = (int) (WIDTH * 0.2);
         int invY = (int) (HEIGHT * 0.01);
@@ -106,6 +106,20 @@ public class GamePanel extends JPanel {
 
                 if (keyCode == KeyEvent.VK_ESCAPE) {
                     showConsole = false;
+                }
+
+                if (showConsole && !isShowingPane) {
+                    pressedKeys.clear();
+                    isShowingPane = true;
+                    String userInput = JOptionPane.showInputDialog(GamePanel.this, "CONSOLE:", "/");
+                    isShowingPane = false;
+
+                    if (userInput != null) {
+                        console.prompt(userInput);
+                    }
+
+                    showConsole = false;
+
                 }
             }
 
@@ -167,15 +181,32 @@ public class GamePanel extends JPanel {
                     }
                     else {
                         // Use tool
-                        if (selectedItemStack != null && selectedItemStack.getItemType() instanceof ToolType) {
-                            for (ToolType toolType : ToolType.values()) {
-                                if (selectedItemStack.getItemType() == toolType) {
-                                    player.useTool(toolType, world.getBlockAt(row, col));
-                                }
-                            }
+                        if (selectedItemStack == null || selectedItemStack.getItemType() instanceof BlockType) {
+                            player.breakBlockAt(row, col);
                         }
                         else {
-                            player.breakBlockAt(row, col);
+                            if (selectedItemStack.getItemType() instanceof ToolType) {
+                                for (ToolType toolType : ToolType.values()) {
+                                    if (selectedItemStack.getItemType() == toolType) {
+                                        player.useTool(toolType, world.getBlockAt(row, col));
+                                    }
+                                }
+                            }
+                            // Allow choosing fill grenade block
+                            else if (selectedItemStack.getItemType() == ThrowableType.FILL_GRENADE) {
+                                if (!isShowingPane) {
+                                    isShowingPane = true;
+                                    String userInput = JOptionPane.showInputDialog(GamePanel.this, "Fill Grenade Item Selector:");
+                                    isShowingPane = false;
+
+                                    if (userInput != null) {
+                                        ItemType itemType = Items.getItemType(userInput);
+                                        if (itemType instanceof BlockType) {
+                                            FillGrenade.selectedBlockType = (BlockType) itemType;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -405,22 +436,6 @@ public class GamePanel extends JPanel {
         g2d.setColor(Color.BLACK);
         g2d.setFont(debugFont);
         g2d.drawString("x: " + x + " y: " + y, 20, 20);
-
-        if (showConsole && !isShowingConsole) {
-
-            isShowingConsole = true;
-            String userInput = JOptionPane.showInputDialog(null, "CONSOLE: ");
-            isShowingConsole = false;
-
-            if (userInput != null) {
-                if (console.prompt(userInput)) {
-                    showConsole = false;
-                }
-            }
-            else {
-                showConsole = false;
-            }
-        }
     }
 
     @Override
